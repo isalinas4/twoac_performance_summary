@@ -2,32 +2,24 @@
 """
 Created on Thu Aug 10 15:33:08 2020
 
-This is for creating summary stats. 
+This is for creating summary stats on two alternative choice behavior. 
 
 @author: isabe
 """
 
 import numpy as np
 import pandas as pd
-from jaratoolbox import loadbehavior
-#from jaratoolbox import extraplots
-import numpy as np
 import matplotlib.pyplot as plt 
-#from statsmodels.stats.proportion import proportion_confint
-#import sys
 from jaratoolbox import behavioranalysis 
-#from jaratoolbox import settings 
-from collections import Counter as cntr
-#from scipy.stats import norm
-from datetime import datetime
 
-#Add the dates you want to look at. 
+
+#Choose the subject and the dates of interest. 
 subject = 'chad039'
 #subject = 'chad042'
 #subject = 'chad043'
 #subject = 'chad044'
+
 paradigm = 'twochoice'
-#sessions = ['20200926a', '20200928a', '20200929a', '20201001a', '20201003a', '20201005a','20201006a' ,'20201007a', '20201008a', '20201009a', '20201010a']
 
 #the sessions below are the dates that the animal discriminated AM sounds the first time
 #sessions = ['20200808aii', '20200810aii','20200811aii', '20200813a', '20200814a', '20200904a', '20200905a',
@@ -91,7 +83,6 @@ df_trial_information = pd.DataFrame({'sessionID': sessionID,
                                      'total_left_trials': total_left_trials,
                                      'total_right_trials': total_right_trials
                                      })
-
 
 df_session_information = df_trial_information.groupby(by = ['sessionID']) .sum()
 
@@ -168,59 +159,3 @@ plt.show()
 #plt.ylim(0, 100)
 #plt.show() 
 
-
-
-'''
-
-#DON'T DELETE ANYTHING BELOW THIS, ONLY COPY AND PASTE! This is literally the one think I am sure about
-#This code summarizes the performance of a mouse, but you can only see one session at a time. 
-
-# Don't mess with anything under this (you finally have the summary down. )
-subject = 'chad039'
-#subject = 'chad042'
-#subject = 'chad043'
-#subject = 'chad044'
-session = '20200915a'
-#session = '20200814a'
-paradigm = 'twochoice'
-behavFile = loadbehavior.path_to_behavior_data(subject,paradigm,session)
-bdata = loadbehavior.BehaviorData(behavFile)
-
-licks_left = bdata['nLicksLeft']
-licks_right = bdata['nLicksRight']
-total_hits_left = bdata['nHitsLeft']
-total_hits_right = bdata['nHitsRight']
-#per_response_left = (licks_left/ (licks_right+ licks_left) * 100)
-#per_response_right = (licks_right/ (licks_left + licks_right) * 100)
-choice = bdata['choice'] 
-choice_left = bdata['choice'] == bdata.labels['choice']['left']
-valid_choice = choice != bdata.labels['choice']['none']
-no_choice = choice =bdata.labels['choice']['none']
-hit_outcome = bdata['outcome'] == bdata.labels['outcome']['hit']
-
-left_trials = bdata['rewardSide'] == bdata.labels['rewardSide']['left']
-right_trials = bdata['rewardSide'] == bdata.labels['rewardSide']['right']
-
-total_left_trials = left_trials.sum()
-total_right_trials = right_trials.sum()
-
-percent_correct_left = (total_hits_left[-1] / total_left_trials) * 100 
-percent_correct_right = (total_hits_right[-1] / total_right_trials) *100
-
-
-percent_correct_choices = ((hit_outcome.sum())/ (valid_choice.sum()) * 100)
-print('Percent correct responses: ({:0.1f}%)'.format(percent_correct_choices))
-#print(percent_correct_choices)
-
-numerator_l = np.sum((bdata['outcome']==bdata.labels['outcome']['hit']) & (bdata['choice']==bdata.labels['choice']['left']))
-denominator_l = np.sum((bdata['rewardSide']==bdata.labels['rewardSide']['left']) & ~(bdata['choice'] == bdata.labels['choice']['none']))
-percent_correct_response_l = 100 * numerator_l/denominator_l
-print('Percent correct response to the left: ({:0.1f}%)'.format(100 * numerator_l/denominator_l))
-#print(100 * numerator_l/denominator_l)
-
-numerator_r = np.sum((bdata['outcome']==bdata.labels['outcome']['hit']) & (bdata['choice']==bdata.labels['choice']['right']))
-denominator_r = np.sum((bdata['rewardSide']==bdata.labels['rewardSide']['right']) & ~(bdata['choice'] == bdata.labels['choice']['none']))
-percent_correct_response_r = 100 * numerator_r/denominator_r
-print('Percent correct response to the right: ({:0.1f}%)'.format(100 * numerator_r/denominator_r))
-#print(100 * numerator_r/denominator_r)
-'''
