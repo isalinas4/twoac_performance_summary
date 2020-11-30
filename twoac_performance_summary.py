@@ -86,9 +86,6 @@ df_trial_information = pd.DataFrame({'sessionID': sessionID,
 
 df_session_information = df_trial_information.groupby(by = ['sessionID']) .sum()
 
-#This line shows why we cant use the total number of trials to look at our outcome, since we don't force the mice to make a choice there are a lot of trials that they simply do not respond.
-#all_trials_performance = ((df_session_information['hit_outcome']) /df_session_information['total_trials'] *100)
-
 percent_correct = ((df_session_information['hit_outcome']) /df_session_information['valid_choice'] *100)
 left_performance = ((df_session_information['left_hits'] / df_session_information['valid_left_trials']) *100)
 right_performance = ((df_session_information['right_hits'] / df_session_information['valid_right_trials']) *100)
