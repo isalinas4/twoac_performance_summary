@@ -15,21 +15,18 @@ from jaratoolbox import behavioranalysis
 
 
 #subject = 'chad039'
-paradigm = 'twochoice'
 #sessions = ['20200803a', '20200804a', '20200805a', '20200806a']
 
 #subject = 'chad042'
-#paradigm = 'twochoice'
 #sessions = ['20200712a', '20200713a', '20200715a']
 
 #subject = 'chad043'
-#paradigm = 'twochoice'
 #sessions = ['20201005a', '20201006a']
 
-subject = 'chad044'
-#paradigm = 'twochoice'
-sessions = ['20200718a', '20200722a']
+#subject = 'chad044'
+#sessions = ['20200718a', '20200722a']
 
+paradigm = 'twochoice'
 bdata = behavioranalysis.load_many_sessions(subject,sessions,paradigm)
 
 
