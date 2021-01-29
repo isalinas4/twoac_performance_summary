@@ -36,7 +36,7 @@ chad058 = {'psycurveMode':'mid_and_extreme',
                'experimenter' : 'isabella'}
 
 chad059 = {'psycurveMode':'mid_and_extreme',
-               'psycurveNsteps':12,
+               'psycurveNsteps':8,
                'taskMode':'discriminate_stim',
                'stimType' : 'sound_only',
                'soundType':'chords',
