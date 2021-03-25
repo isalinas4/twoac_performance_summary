@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 """
 Created on Mon Jan 18 12:54:55 2021
 
@@ -8,26 +9,35 @@ Created on Mon Jan 18 12:54:55 2021
 
 import numpy as np
 import pandas as pd
+import seaborn 
+seaborn.set()
 from jaratoolbox import behavioranalysis 
 from jaratoolbox import loadbehavior
 import matplotlib.pyplot as plt  
 
 
 subjects = [
-            'pals001',
-            'pals003',
-            'pals004',
-            'pals005'
+            'chad055',
+            'chad056',
+            'chad057',
+            'chad058'
             ]
 
 
 paradigm = 'twochoice'
-session = ['20210227a']
+sessionsEachSubject = { 
+    'chad055': ['20201212a', '20201213a'],
+    'chad056': ['20201216a', '20201217a'],
+    'chad057': ['20210104a','20210105a'],
+    'chad058': [ '20201215a','20201216a']
+    }
 
+mouse_cumulative = {}
 mouse_perf = {}
 for subject in subjects: 
-    bdata = behavioranalysis.load_many_sessions(subject,session,paradigm)
-    
+    sessions = sessionsEachSubject[subject]    
+    bdata = behavioranalysis.load_many_sessions(subject,paradigm='twochoice',sessions=sessions)
+        
     target_frequency = bdata['targetFrequency']
     ntrials = len(bdata['outcome'])
     trial_range = np.arange(0,ntrials)
@@ -76,29 +86,29 @@ for subject in subjects:
                               'false_alarms': false_alarms,
                               'misses': misses,
                               'left_hits': left_hits,
-                              'right_hits': right_hits,
+                              'right_hits': right_hits
                               })
     
     trial_information['choice_bins'] = pd.cut(trial_information.choice_range,
                                              bins=pd.interval_range(start=0, end=3500, periods=5))    
     trial_information['trial_bins'] = pd.cut(trial_information.choice_range,
                                              bins=pd.interval_range(start=0, end=3500, periods=5)) 
-     
+   
     binned_trial_info = trial_information.groupby('trial_bins') .sum()
     binned_choice_info = trial_information.groupby('choice_bins') .sum()
-    print(binned_trial_info.drop(['trial_range'], axis=1))
-    print(subject)
-    print(binned_choice_info.drop(['choice_range'], axis=1))
-    print(nchoice)
+    
+    #print(binned_trial_info.drop(['trial_range'], axis=1))
+    #print(subject)
+    #print(binned_choice_info.drop(['choice_range'], axis=1))
+    #print(nchoice)
     
     percent_correct = (binned_choice_info['hits']/ binned_choice_info['valid_choice']) * 100
-    print(percent_correct)
    
     mouse_perf[subject] = pd.DataFrame({
                                         '%_correct': round(percent_correct, 2)
                                         })
     
-    
+
     '''
 #This plot shows the trials
   
@@ -110,14 +120,75 @@ for subject in subjects:
     ax.legend(fontsize=18)
     plt.show()
     '''
- 
+    '''
 #This plot shows only the valid choices and is most relevant to our analysis. 
     bx = percent_correct.plot(kind='bar', figsize=(15, 10), legend=True, fontsize=20,)
-    bx.set_xlabel("{} Valid Choice Trials".format(nchoice), fontsize=18)
+    bx.set_xlabel("{} Trials".format(nchoice), fontsize=18)
     plt.xticks(rotation=0)
     plt.ylim([0,100])
     bx.set_ylabel("Percent Correct (%)", fontsize=18)
-    plt.title('Mouse: {} ; Session Date: {}'.format(subject, session), fontsize=20)
+    plt.title('Mouse: {} ; Session Date: {}'.format(subject, sessions), fontsize=20)
     #bx.legend(fontsize=18)
     plt.show()
-  
+    '''
+#Lines below calculate and graph the cumulative sum outcomes by trial which  give us a better idea of how the animal performs 
+    cumulative_sum = pd.DataFrame({'choice_trials': valid_choice,
+                              'trial_range': trial_range,    
+                              'hits': hit_outcome,
+                              'errors': total_errors,
+                              'false_alarms': false_alarms,
+                              'misses': misses
+                              })
+    
+    cumulative_sum['sum_hits'] = cumulative_sum.hits.cumsum()
+    cumulative_sum['sum_errors'] = cumulative_sum.errors.cumsum()
+    cumulative_sum['sum_false_alarms'] = cumulative_sum.false_alarms.cumsum()
+    cumulative_sum['sum_misses'] = cumulative_sum.misses.cumsum()
+    cumulative_sum['sum_choices'] = cumulative_sum.choice_trials.cumsum()
+    
+    mouse_cumulative[subject]= pd.DataFrame({'hits':cumulative_sum['sum_hits'],
+                                      'errors':cumulative_sum['sum_errors']})
+
+    
+'''
+
+#plots the cumulative number of hits/ choice trial 
+    #plt.scatter(choice_range, cumulative_sum['sum'], color = 'blue')
+    plt.plot(trial_range, cumulative_sum['sum_hits'], color = 'blue', label = 'Hits')
+    plt.plot(trial_range, cumulative_sum['sum_errors'], color = 'red', label = 'Errors')
+    #plt.plot(trial_range, cumulative_sum['sum_choices'], color = 'pink', label = 'Choice')
+    #plt.plot(choice_range, cumulative_sum['sum_false_alarms'], color = 'orange', label = 'False Alarms')
+    plt.plot(trial_range, cumulative_sum['sum_misses'], color = 'green', label = 'Misses')
+    plt.title('{} choices on {} '.format(subject, sessions))
+    plt.xlabel('Trial #')
+    plt.ylabel('Cumulative Trial Outcome')
+    plt.legend(loc = 0)
+    #plt.savefig('{}_{}.png'.format(subject,sessions), dpi=300)
+    #plt.ylim(0, 2000)
+    plt.show() 
+'''
+    
+'''
+chad055 = mouse_cumulative['chad055']
+chad056 = mouse_cumulative['chad056']
+chad057 = mouse_cumulative['chad057']
+chad058 = mouse_cumulative['chad058']
+
+fig1 = plt.figure()
+ax1 = fig1.add_subplot(111)
+
+
+#Plot is used to graph the all of the animals, notice how you have to add each mouse. Will fix this later
+ax1.plot(chad055['hits'], color = 'red', label='Hits')
+ax1.plot(chad055['errors'], 'r--', label = 'Errors')
+ax1.plot(chad056['hits'], color ='g')
+ax1.plot(chad056['errors'],'g--')
+ax1.plot(chad057['hits'], color ='c')
+ax1.plot(chad057['errors'],'c--')
+ax1.plot(chad058['hits'],color = 'm')
+ax1.plot(chad058['errors'],'m--')
+ax1.legend(loc='upper left', frameon=False)
+ax1.set_xlabel('Trials')
+ax1.set_ylabel('Cumulative Hits')
+#fig1.savefig('average_cumhits.png'.format(subject,sessions), dpi=300)
+'''
